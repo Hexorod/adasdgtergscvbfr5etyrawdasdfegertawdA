@@ -1,11 +1,11 @@
 <!-- Ultimate Game Stash file--> 
 <!-- For the regularly updating doc go to https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/ -->
-<!--This is a gambling game. Uses githack--!>
+<!--This is a gambling game. Uses jsdelivr--!>
 
 <!DOCTYPE html>
-<base href="https://rawcdn.githack.com/Stinkalistic/SWAGgames/b06ff490451ec6563c29244dab1d8845408a22fe/gambling/">
 <html xmlns='http://www.w3.org/1999/xhtml' lang='' xml:lang=''>
 <head>
+<base href="https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/dungeongamble/">
 	<meta charset='utf-8' />
 	<meta name='viewport' content='width=device-width, user-scalable=no' />
 	<title>Dungeons & Degenerate Gamblers</title>
@@ -140,10 +140,12 @@
 		</div>
 		<div id='status-notice' class='godot' style='display: none;'></div>
 	</div>
-
+	
+	<script src="main.js"></script>
 	<script type='text/javascript' src='gamble.js'></script>
 	<script type='text/javascript'>//<![CDATA[
-
+		
+		window.godotRunStart = function() {
 		const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"executable":"gamble","experimentalVK":false,"fileSizes":{"index.pck":97937408,"gamble.wasm":25658069},"focusCanvas":true,"gdnativeLibs":[]};
 		var engine = new Engine(GODOT_CONFIG);
 
@@ -247,6 +249,7 @@
 				}, displayFailureNotice);
 			}
 		})();
+		};
 	//]]></script>
 </body>
 </html>
