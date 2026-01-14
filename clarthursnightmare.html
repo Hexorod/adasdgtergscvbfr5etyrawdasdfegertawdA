@@ -14,7 +14,6 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico"> 
     <link rel="stylesheet" href="TemplateData/style.css">
     <script>
-// Global fetch interceptor - catches ALL requests
 (function() {
   const originalFetch = window.fetch;
   window.fetch = function(...args) {
@@ -41,7 +40,6 @@
     return originalOpen.call(this, method, url, ...rest);
   };
 
-  // Intercept video/audio element sources
   const originalCreateElement = document.createElement;
   document.createElement = function(tagName) {
     const element = originalCreateElement.call(document, tagName);
