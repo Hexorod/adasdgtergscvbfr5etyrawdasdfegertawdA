@@ -1,0 +1,18 @@
+<!-- ugs file -->
+<!DOCTYPE html>
+<html>
+  <body>
+    <div ondragover="event.preventDefault();" 
+         ondrop="event.preventDefault(); var file = event.dataTransfer.files[0]; if(file) { var reader = new FileReader(); reader.onload = function(e) { var w = window.open('about:blank'); w.document.write(e.target.result); w.document.close(); }; reader.readAsText(file); }">
+<style>
+  body {
+background: black;
+}
+  a {
+font-size: 25px
+}
+      </style>
+      <a href="https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/edit?usp=sharing">drag html file here </a>
+    </div>
+  </body>
+</html>
