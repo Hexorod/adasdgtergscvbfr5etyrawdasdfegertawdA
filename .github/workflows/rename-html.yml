@@ -1,50 +1,74 @@
-- name: Rename HTML files and generate JSON
-  run: |
-    shopt -s nullglob
+name: Rename HTML Files Sequentially
 
-    # Find highest existing numbered HTML file
-    max=0
-    for f in *.html; do
-      if [[ "$f" =~ ^([0-9]+)\.html$ ]]; then
-        num="${BASH_REMATCH[1]}"
-        (( num > max )) && max=$num
-      fi
-    done
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-    count=$((max + 1))
+jobs:
+  rename-html:
+    runs-on: ubuntu-latest
 
-    json_output="["
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    for file in *.html; do
-      # Skip already numbered files
-      if [[ "$file" =~ ^[0-9]+\.html$ ]]; then
-        continue
-      fi
+      - name: Rename HTML files and generate JSON
+        shell: bash
+        run: |
+          shopt -s nullglob
 
-      original_name=$(basename "$file" .html)
+          # Find highest existing numbered HTML file
+          max=0
+          for f in *.html; do
+            if [[ "$f" =~ ^([0-9]+)\.html$ ]]; then
+              num="${BASH_REMATCH[1]}"
+              (( num > max )) && max=$num
+            fi
+          done
 
-      # Remove CL at beginning (case-insensitive)
-      cleaned_name=$(echo "$original_name" | sed -E 's/^[Cc][Ll]//')
+          count=$((max + 1))
 
-      # Replace - and _ with spaces
-      cleaned_name=$(echo "$cleaned_name" | sed -E 's/[-_]+/ /g')
+          json_output="["
 
-      # Capitalize each word
-      formatted_name=$(echo "$cleaned_name" | awk '{for(i=1;i<=NF;i++){$i=toupper(substr($i,1,1)) tolower(substr($i,2))}}1')
+          for file in *.html; do
+            # Skip already numbered files
+            if [[ "$file" =~ ^[0-9]+\.html$ ]]; then
+              continue
+            fi
 
-      new_name="$count.html"
-      git mv "$file" "$new_name"
+            original_name=$(basename "$file" .html)
 
-      json_output="$json_output
-        {\"id\": $count, \"name\": \"$formatted_name\"},"
+            cleaned_name=$(echo "$original_name" | sed -E 's/^[Cc][Ll]//')
+            cleaned_name=$(echo "$cleaned_name" | sed -E 's/[-_]+/ /g')
 
-      count=$((count + 1))
-    done
+            formatted_name=$(echo "$cleaned_name" | awk '{for(i=1;i<=NF;i++){$i=toupper(substr($i,1,1)) tolower(substr($i,2))}}1')
 
-    # Remove trailing comma
-    json_output=$(echo "$json_output" | sed '$ s/,$//')
+            new_name="$count.html"
+            git mv "$file" "$new_name"
 
-    json_output="$json_output
-    ]"
+            json_output="$json_output
+              {\"id\": $count, \"name\": \"$formatted_name\"},"
 
-    echo "$json_output" > files.json
+            count=$((count + 1))
+          done
+
+          json_output=$(echo "$json_output" | sed '$ s/,$//')
+          json_output="$json_output
+          ]"
+
+          echo "$json_output" > files.json
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add .
+            git commit -m "Renamed HTML files and generated files.json"
+            git push
+          fi
